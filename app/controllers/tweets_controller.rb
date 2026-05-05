@@ -10,9 +10,17 @@ class TweetsController < ApplicationController
     redirect_to root_path, alert: '自分の投稿だけ編集・削除できます。'
   end
 
-  def index
-    @tweets = Tweet.order(activity_date: :desc)
+
+def index
+  if user_signed_in?
+    @tweets = current_user.tweets
+                          .includes(images_attachments: :blob)
+                          .order(created_at: :desc)
+  else
+    @tweets = []
   end
+end
+
 
   def show
     @comment = Comment.new

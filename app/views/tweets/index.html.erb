@@ -25,11 +25,12 @@
         <div class="tweet-images">
           <% tweet.images.first(3).each do |image| %>
             <% begin %>
-              <%= image_tag(
-                    image.variant(resize_to_limit: [200, 200]).processed,
-                    class: "tweet-thumbnail"
-                  ) %>
-            <% rescue ActiveStorage::FileNotFoundError %>
+
+                <%= image_tag image, style: "width: 30%; max-width: 200px; height: auto;" %>
+
+              
+
+           <% rescue ActiveStorage::FileNotFoundError %>
               <%# 古いサーバーにしかなかった画像など、実体がないものはスキップ %>
             <% end %>
           <% end %>
