@@ -11,14 +11,9 @@ class TweetsController < ApplicationController
   end
 
 
-def index
-  if user_signed_in?
-    @tweets = current_user.tweets
-                          .includes(images_attachments: :blob)
-                          .order(created_at: :desc)
-  else
-    @tweets = []
-  end
+
+  def index
+    @tweets = Tweet.order(activity_date: :desc)
 end
 
 
