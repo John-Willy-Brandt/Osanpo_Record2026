@@ -6,7 +6,7 @@
     <p>現在の写真:</p>
     <% @tweet.images.each do |image| %>
       <div class="edit-image-block">
-        <%= image_tag image.variant(resize_to_limit: [150,150]).processed %><br>
+        <%= image_tag image, class: "edit-preview-image" %><br>
         <label>
           <%= check_box_tag "tweet[remove_image_ids][]", image.id %>
           この写真を削除

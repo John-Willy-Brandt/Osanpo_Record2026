@@ -13,3 +13,16 @@
 .header-actions .btn-delete {
   display: inline-block;
 }
+
+.edit-image-block {
+  display: inline-block;
+  margin: 10px;
+  text-align: center;
+}
+
+.edit-image-block img.edit-preview-image {
+  width: 150px !important;
+  height: 150px !important;
+  object-fit: cover;
+  border-radius: 8px;
+}

@@ -77,12 +77,12 @@
 
                 <% if thumb_tweet.present? %>
                   <div class="day-image">
-                    <%= image_tag(
-                          thumb_tweet.images.first
-                                     .variant(resize_to_limit: [60, 60])
-                                     .processed,
-                          class: "calendar-thumb"
-                        ) %>
+
+                <%= image_tag(
+                  thumb_tweet.images.first,
+                  class: "calendar-thumb"
+                ) %>
+
                   </div>
                 <% elsif has_activity %>
                   <div class="day-dot">🔵</div>

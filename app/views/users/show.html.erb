@@ -12,8 +12,7 @@
     <% begin %>
 
 
-            <%= image_tag image.variant(resize_to_limit: [300, 300]),
-                          class: "tweet-image" %>
+  <%= image_tag image, class: "tweet-image" %>
 
   <% rescue ActiveStorage::FileNotFoundError %>
     <% end %>
