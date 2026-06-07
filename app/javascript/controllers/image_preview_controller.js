@@ -1,5 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
+const MAX_PX = 1920   // resize to at most 1920px on the long side
+const QUALITY = 0.82  // JPEG compression quality
+
 export default class extends Controller {
   static targets = ["input", "container"]
 
@@ -13,88 +16,84 @@ export default class extends Controller {
     this.containerTarget.innerHTML = ""
 
     files.forEach((file, index) => {
-      const entry = { file, rotation: 0, canvas: null, img: null }
-      this.entries.push(entry)
+      const entry = { filename: file.name, rotation: 0, canvas: null, img: null, blob: null }
+      this.entries[index] = entry
 
-      const slot = document.createElement("div")
-      slot.className = "upload-preview-slot"
-
-      const canvas = document.createElement("canvas")
-      canvas.className = "upload-canvas"
-      entry.canvas = canvas
-
-      const actions = document.createElement("div")
-      actions.className = "upload-rotate-actions"
-
-      const ccwBtn = document.createElement("button")
-      ccwBtn.type = "button"
-      ccwBtn.className = "btn-rotate"
-      ccwBtn.textContent = "↺ 左に回転"
-      ccwBtn.addEventListener("click", () => this.rotate(index, -90))
-
-      const cwBtn = document.createElement("button")
-      cwBtn.type = "button"
-      cwBtn.className = "btn-rotate"
-      cwBtn.textContent = "↻ 右に回転"
-      cwBtn.addEventListener("click", () => this.rotate(index, 90))
-
-      actions.append(ccwBtn, cwBtn)
-      slot.append(canvas, actions)
+      const slot = this.buildSlot(index)
+      entry.canvas = slot.querySelector("canvas")
       this.containerTarget.appendChild(slot)
 
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const img = new Image()
-        img.onload = () => {
-          entry.img = img
-          this.drawCanvas(entry)
-        }
-        img.src = e.target.result
+      const img = new Image()
+      img.onload = () => {
+        entry.img = img
+        this.redraw(entry).then(() => this.syncInput())
       }
-      reader.readAsDataURL(file)
+      img.src = URL.createObjectURL(file)
     })
   }
 
   rotate(index, degrees) {
     const entry = this.entries[index]
-    if (!entry) return
+    if (!entry?.img) return
     entry.rotation = (entry.rotation + degrees + 360) % 360
-    this.drawCanvas(entry)
-    this.updateFileInput()
+    this.redraw(entry).then(() => this.syncInput())
   }
 
-  drawCanvas(entry) {
+  // Resize to MAX_PX, apply rotation, compress to JPEG, store blob
+  redraw(entry) {
     const { img, rotation, canvas } = entry
-    if (!img) return
+    let w = img.naturalWidth, h = img.naturalHeight
+
+    if (w > MAX_PX || h > MAX_PX) {
+      if (w >= h) { h = Math.round(h * MAX_PX / w); w = MAX_PX }
+      else        { w = Math.round(w * MAX_PX / h); h = MAX_PX }
+    }
+
     const swapped = rotation === 90 || rotation === 270
-    canvas.width  = swapped ? img.naturalHeight : img.naturalWidth
-    canvas.height = swapped ? img.naturalWidth  : img.naturalHeight
+    canvas.width  = swapped ? h : w
+    canvas.height = swapped ? w : h
 
     const ctx = canvas.getContext("2d")
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.save()
     ctx.translate(canvas.width / 2, canvas.height / 2)
     ctx.rotate((rotation * Math.PI) / 180)
-    ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2)
+    ctx.drawImage(img, -w / 2, -h / 2, w, h)
     ctx.restore()
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => { entry.blob = blob; resolve() }, "image/jpeg", QUALITY)
+    })
   }
 
-  async updateFileInput() {
-    const files = await Promise.all(
-      this.entries.map((entry) => {
-        if (entry.rotation === 0) return Promise.resolve(entry.file)
-        return new Promise((resolve) => {
-          const type = entry.file.type || "image/jpeg"
-          entry.canvas.toBlob(
-            (blob) => resolve(new File([blob], entry.file.name, { type })),
-            type
-          )
-        })
-      })
-    )
-
+  // Rebuild the file input from all compressed blobs
+  syncInput() {
+    if (this.entries.some((e) => !e.blob)) return  // wait until all are ready
     const dt = new DataTransfer()
-    files.forEach((f) => dt.items.add(f))
+    this.entries.forEach((e) => dt.items.add(new File([e.blob], e.filename, { type: "image/jpeg" })))
     this.inputTarget.files = dt.files
+  }
+
+  buildSlot(index) {
+    const slot = document.createElement("div")
+    slot.className = "upload-preview-slot"
+
+    const canvas = document.createElement("canvas")
+    canvas.className = "upload-canvas"
+
+    const actions = document.createElement("div")
+    actions.className = "upload-rotate-actions"
+
+    const ccw = document.createElement("button")
+    ccw.type = "button"; ccw.className = "btn-rotate"; ccw.textContent = "↺ 左に回転"
+    ccw.addEventListener("click", () => this.rotate(index, -90))
+
+    const cw = document.createElement("button")
+    cw.type = "button"; cw.className = "btn-rotate"; cw.textContent = "↻ 右に回転"
+    cw.addEventListener("click", () => this.rotate(index, 90))
+
+    actions.append(ccw, cw)
+    slot.append(canvas, actions)
+    return slot
   }
 }
