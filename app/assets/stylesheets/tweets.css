@@ -1,3 +1,26 @@
+.upload-slot {
+  margin-bottom: 8px;
+}
+
+.upload-preview {
+  margin-top: 6px;
+  display: inline-block;
+}
+
+.upload-canvas {
+  display: block;
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.upload-rotate-actions {
+  margin-top: 4px;
+  display: flex;
+  gap: 6px;
+}
+
 .header-actions {
   display: flex;
   gap: 10px;
