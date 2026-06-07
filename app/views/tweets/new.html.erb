@@ -23,21 +23,12 @@
  <!--写真 -->
 <div class="field">
   <%= f.label :images, "おさんぽ写真（10枚まで）" %><br>
-
-  <% 10.times do %>
-    <div class="upload-slot" data-controller="image-preview">
-      <%= f.file_field :images, accept: "image/*", name: "tweet[images][]",
-            data: { image_preview_target: "input", action: "change->image-preview#fileSelected" } %>
-      <div data-image-preview-target="preview" class="upload-preview" style="display:none">
-        <canvas data-image-preview-target="canvas" class="upload-canvas"></canvas>
-        <div class="upload-rotate-actions">
-          <button type="button" class="btn-rotate" data-action="click->image-preview#rotateCcw">↺ 左に回転</button>
-          <button type="button" class="btn-rotate" data-action="click->image-preview#rotateCw">↻ 右に回転</button>
-        </div>
-      </div>
-    </div>
-  <% end %>
-
+  <div data-controller="image-preview">
+    <%= f.file_field :images, accept: "image/*", name: "tweet[images][]",
+          multiple: true,
+          data: { image_preview_target: "input", action: "change->image-preview#fileSelected" } %>
+    <div data-image-preview-target="container" class="upload-preview-container"></div>
+  </div>
 </div>
 
   <!-- タイトル -->
