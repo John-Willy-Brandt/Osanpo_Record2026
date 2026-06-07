@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class TweetsController < ApplicationController
-  before_action :set_tweet, only: %i[show edit update destroy rotate_image]
-  before_action :authorize_tweet!, only: %i[edit update destroy rotate_image]
+  before_action :set_tweet, only: %i[show edit update destroy rotate_image destroy_image]
+  before_action :authorize_tweet!, only: %i[edit update destroy rotate_image destroy_image]
 
   def authorize_tweet!
     return if @tweet.user == current_user
@@ -42,27 +42,22 @@ end
   def edit; end
 
   def update
-    # ① チェックがついた画像を削除
-    if params[:tweet][:remove_image_ids].present?
-      params[:tweet][:remove_image_ids].each do |attachment_id|
-        @tweet.images.find(attachment_id).purge
-      end
-    end
-
-    # ② 新しくアップロードされた画像があれば「追加」で attach
     if params[:tweet][:images].present?
       params[:tweet][:images].each do |image|
         @tweet.images.attach(image)
       end
     end
 
-    # ③ それ以外の属性（subject, text など）だけ更新する
-    #    images はここで扱わないようにするのがポイント！
     if @tweet.update(tweet_params.except(:images))
       redirect_to tweet_path(@tweet), notice: '更新しました'
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def destroy_image
+    @tweet.images.find(params[:image_id]).purge
+    redirect_to edit_tweet_path(@tweet), notice: '写真を削除しました'
   end
 
   def rotate_image

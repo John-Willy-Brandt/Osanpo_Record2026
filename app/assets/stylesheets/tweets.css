@@ -75,3 +75,24 @@
 .btn-rotate:hover {
   background: #365f7e;
 }
+
+.btn-delete-image {
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-delete-image:hover {
+  background: #96281b;
+}
+
+.edit-images-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
