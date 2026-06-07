@@ -13,5 +13,8 @@ Rails.application.routes.draw do
 
   resources :tweets do
     resources :comments, only: :create
+    member do
+      post :rotate_image
+    end
   end
 end

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class TweetsController < ApplicationController
-  before_action :set_tweet, only: %i[show edit update destroy]
-  before_action :authorize_tweet!, only: %i[edit update destroy]
+  before_action :set_tweet, only: %i[show edit update destroy rotate_image]
+  before_action :authorize_tweet!, only: %i[edit update destroy rotate_image]
 
   def authorize_tweet!
     return if @tweet.user == current_user
@@ -63,6 +63,33 @@ end
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def rotate_image
+    attachment = @tweet.images.find(params[:image_id])
+    degrees = params[:direction] == 'ccw' ? -90 : 90
+
+    Tempfile.create(['rotated', ".#{attachment.filename.extension}"]) do |tmp|
+      tmp.binmode
+      tmp.write(attachment.download)
+      tmp.rewind
+
+      rotated_path = ImageProcessing::MiniMagick
+        .source(tmp.path)
+        .rotate(degrees)
+        .call
+
+      filename = attachment.filename.to_s
+      content_type = attachment.content_type
+      attachment.purge
+      @tweet.images.attach(
+        io: File.open(rotated_path),
+        filename: filename,
+        content_type: content_type
+      )
+    end
+
+    redirect_to edit_tweet_path(@tweet), notice: '写真を回転しました'
   end
 
   def destroy

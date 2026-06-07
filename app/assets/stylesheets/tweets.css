@@ -26,3 +26,26 @@
   object-fit: cover;
   border-radius: 8px;
 }
+
+.edit-image-actions {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-rotate {
+  background: #4a7fa5;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-rotate:hover {
+  background: #365f7e;
+}

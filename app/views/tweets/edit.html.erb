@@ -7,10 +7,22 @@
     <% @tweet.images.each do |image| %>
       <div class="edit-image-block">
         <%= image_tag image, class: "edit-preview-image" %><br>
-        <label>
-          <%= check_box_tag "tweet[remove_image_ids][]", image.id %>
-          この写真を削除
-        </label>
+        <div class="edit-image-actions">
+          <%= button_to "↺ 左に回転",
+                rotate_image_tweet_path(@tweet),
+                params: { image_id: image.id, direction: 'ccw' },
+                class: "btn-rotate",
+                form: { data: { turbo: false } } %>
+          <%= button_to "↻ 右に回転",
+                rotate_image_tweet_path(@tweet),
+                params: { image_id: image.id, direction: 'cw' },
+                class: "btn-rotate",
+                form: { data: { turbo: false } } %>
+          <label>
+            <%= check_box_tag "tweet[remove_image_ids][]", image.id %>
+            この写真を削除
+          </label>
+        </div>
       </div>
     <% end %>
   <% end %>
