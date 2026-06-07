@@ -22,10 +22,15 @@
 
  <!--写真 -->
 <div class="field">
-  <%= f.label :images, "おさんぽ写真（3枚まで）" %><br>
+  <%= f.label :images, "おさんぽ写真（10枚まで）" %><br>
 
-
-
+  <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>
+  <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>
+  <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>
+  <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>
+  <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>
+  <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>
+  <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>
   <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>
   <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>
   <%= f.file_field :images, accept: "image/*", name: "tweet[images][]" %><br>

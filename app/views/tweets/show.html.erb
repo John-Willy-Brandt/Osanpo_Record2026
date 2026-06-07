@@ -1,60 +1,67 @@
-<h1><%= @tweet.subject %></h1>
-<h2>投稿者：<%= @tweet.user.nickname %></h2>
+<div class="show-header">
+  <h1 class="show-title"><%= @tweet.subject %></h1>
+  <div>
+    <span class="show-poster">🐾 <%= link_to @tweet.user.nickname, "/users/#{@tweet.user_id}" %></span>
+    <span class="show-date">📅 <%= @tweet.activity_date %></span>
+  </div>
+</div>
 
 <% if @tweet.images.attached? %>
-  <div class="tweet-images">
-    <% @tweet.images.first(3).each do |image| %>
-
-    <%# 古いサーバー上にしかなかった画像は、いまのサーバーには無いのでスキップ %>
-    <% begin %>
-
-      
-      <%= image_tag image, style: "width: 100%; max-width: 400px; height: auto;" %>  
-
-    <% rescue ActiveStorage::FileNotFoundError %>
-    <% end %>
-     <%# 古いサーバー上にしかなかった画像は、いまのサーバーには無いのでスキップ %>
+  <div class="show-gallery">
+    <% @tweet.images.first(10).each do |image| %>
+      <% begin %>
+        <%= image_tag image %>
+      <% rescue ActiveStorage::FileNotFoundError %>
+      <% end %>
     <% end %>
   </div>
 <% end %>
 
-<p>日付: <%= @tweet.activity_date %></p>
+<div class="show-body">
+  <%= simple_format(@tweet.text) %>
+</div>
 
-<h3>内容</h3>
-<p><%= simple_format(@tweet.text) %></p>
+<div class="show-meta-grid">
+  <div class="show-meta-item">
+    <span class="show-meta-label">カテゴリー</span>
+    <span class="show-meta-value"><%= @tweet.category.name %></span>
+  </div>
+  <div class="show-meta-item">
+    <span class="show-meta-label">時間</span>
+    <span class="show-meta-value"><%= @tweet.duration.name %></span>
+  </div>
+  <div class="show-meta-item">
+    <span class="show-meta-label">強度</span>
+    <span class="show-meta-value"><%= @tweet.intensity.name %></span>
+  </div>
+  <div class="show-meta-item">
+    <span class="show-meta-label">評価</span>
+    <span class="show-meta-value"><%= @tweet.rating.name %></span>
+  </div>
+</div>
 
-<hr>
+<div class="comment-section">
+  <h4 class="comment-section-title">💬 コメント</h4>
 
-<p>
-  カテゴリー：<%= @tweet.category.name %><br>
-  時間：<%= @tweet.duration.name %><br>
-  強度：<%= @tweet.intensity.name %><br>
-  評価：<%= @tweet.rating.name %>
-</p>
-
-<hr>
-
-<div class="comment-form">
-   <% if user_signed_in? && @tweet.user_id != current_user.id %>
-    <%= form_with(model: [@tweet, @comment], local: true) do |form| %>
-      <%= form.text_area :text, placeholder: "コメントする", rows: 2, class: "comment-textarea" %>
-      <%= form.submit "SEND", class: "comment-submit" %>
+  <div class="comment-form">
+    <% if user_signed_in? && @tweet.user_id != current_user.id %>
+      <%= form_with(model: [@tweet, @comment], local: true) do |form| %>
+        <%= form.text_area :text, placeholder: "コメントを書く…", rows: 2, class: "comment-textarea" %>
+        <%= form.submit "SEND", class: "comment-submit" %>
+      <% end %>
+    <% else %>
+      <p class="comment-login-notice">※ コメントの投稿には新規登録 / ログインが必要です</p>
     <% end %>
-  <% else %>
-    <strong>※ コメントの投稿には新規登録 / ログインが必要です ※</strong>
-  <% end %>
+  </div>
+
+  <div class="comments-list">
+    <% @comments.each do |comment| %>
+      <div class="comment-item">
+        <strong><%= link_to comment.user.nickname, "/users/#{comment.user_id}" %>：</strong>
+        <%= comment.text %>
+      </div>
+    <% end %>
+  </div>
 </div>
 
-<div class="comments">
-  <h4>＜コメント一覧＞</h4>
-  <% @comments.each do |comment| %>
-    <p class="comment-item">
-      <strong><%= link_to comment.user.nickname, "/users/#{comment.user_id}" %>：</strong>
-      <%= comment.text %>
-    </p>
-  <% end %>
-</div>
-
-
-<%= link_to "一覧へ戻る", tweets_path %>
-</div>
+<%= link_to "← 一覧へ戻る", tweets_path, class: "show-back-link" %>

@@ -5,9 +5,9 @@
 
 /* ここから cute1 デザイン */
 .footer--cute1 {
-  background: #fffdf8;
-  border-top: 2px solid #ffe1b5;
-  color: #555;
+  background: #f0f7ff;
+  border-top: 2px solid #bfdbfe;
+  color: #2c4f7c;
 }
 
 .footer--cute1 .footer-inner {
@@ -39,7 +39,7 @@
 .footer--cute1 .footer-title {
   font-weight: 700;
   font-size: 16px;
-  color: #ff8c6a;
+  color: #3b82f6;
 }
 
 .footer--cute1 .footer-subtitle {
@@ -58,15 +58,15 @@
 .footer--cute1 .footer-nav a {
   font-size: 13px;
   text-decoration: none;
-  color: #555;
+  color: #1e3a5f;
   padding: 4px 8px;
   border-radius: 999px;
-  background: #fff7e7;
-  border: 1px solid #ffe1b5;
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
 }
 
 .footer--cute1 .footer-nav a:hover {
-  background: #ffe9c8;
+  background: #bfdbfe;
 }
 
 .footer--cute1 .footer-copy {
