@@ -22,11 +22,15 @@
 
       <% if tweet.images.attached? %>
         <div class="tweet-images">
-          <% tweet.images.first(10).each do |image| %>
+          <% preview = tweet.images.first(4) %>
+          <% preview.first(3).each do |image| %>
             <% begin %>
               <%= image_tag image, class: "tweet-thumbnail" %>
             <% rescue ActiveStorage::FileNotFoundError %>
             <% end %>
+          <% end %>
+          <% if preview.size == 4 %>
+            <span class="tweet-more-badge">+<%= tweet.images.count - 3 %></span>
           <% end %>
         </div>
       <% else %>
