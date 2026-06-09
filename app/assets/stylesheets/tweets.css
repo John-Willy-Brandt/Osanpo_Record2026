@@ -47,8 +47,8 @@
 }
 
 .edit-image-block img.edit-preview-image {
-  width: 150px !important;
-  height: 150px !important;
+  width: 110px;
+  aspect-ratio: 89 / 127;
   object-fit: cover;
   border-radius: 8px;
 }
