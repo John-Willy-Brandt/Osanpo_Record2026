@@ -4,24 +4,20 @@
 <ul class="user-tweets">
   <% @tweets.each do |tweet| %>
     <li class="user-tweet">
-      <div class="tweet-images">
-        <% if tweet.images.attached? %>
-          <% tweet.images.each do |image| %>
-
-    <%# 古いサーバー上にしかなかった画像は、いまのサーバーには無いのでスキップ %>
-    <% begin %>
-
-
-  <%= image_tag image, class: "tweet-image" %>
-
-  <% rescue ActiveStorage::FileNotFoundError %>
-    <% end %>
-     <%# 古いサーバー上にしかなかった画像は、いまのサーバーには無いのでスキップ %>
-
-
+      <% if tweet.images.attached? %>
+        <div class="tweet-images">
+          <% preview = tweet.images.first(4) %>
+          <% preview.first(3).each do |image| %>
+            <% begin %>
+              <%= image_tag image, class: "tweet-thumbnail" %>
+            <% rescue ActiveStorage::FileNotFoundError %>
+            <% end %>
           <% end %>
-        <% end %>
-      </div>
+          <% if preview.size == 4 %>
+            <span class="tweet-more-badge">+<%= tweet.images.count - 3 %></span>
+          <% end %>
+        </div>
+      <% end %>
 
       <div class="tweet-body">
         <strong><%= link_to tweet.subject, tweet_path(tweet) %></strong><br>
